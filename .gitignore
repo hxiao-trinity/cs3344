@@ -1,7 +1,14 @@
+
 *.pyc
 .idea/
 */.idea/
-*/__pycache__/
+
 __pycache__/
 *.log
 *.aux
+.vscode
+
+# temp files
+.~*
+*~
+*.orig
