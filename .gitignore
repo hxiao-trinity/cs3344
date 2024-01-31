@@ -1,7 +1,7 @@
+*.pyc
 .idea/
 */.idea/
-search/__pycache__/
+*/__pycache__/
 __pycache__/
 *.log
 *.aux
-*.pyc
