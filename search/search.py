@@ -122,8 +122,20 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    
-    util.raiseNotDefined()
+    queue = util.PriorityQueue()
+    queue.push((problem.getStartState(), 0, []), 0)
+    visited = set()
+    while (not queue.isEmpty()):
+        current, path_cost, path = queue.pop()
+        if problem.isGoalState(current):
+            return path
+        if current not in visited:
+            visited.add(current)
+            for successor, action, cost in problem.getSuccessors(current):
+                if successor not in visited:
+                    queue.push((successor, path_cost + cost , path + [action]), path_cost + cost)
+    return []        
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -135,7 +147,20 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.PriorityQueueWithFunction(lambda state: heuristic(state[0], problem))
+    queue.push((problem.getStartState(), []))
+    visited = set()
+    while (not queue.isEmpty()):
+        current, path = queue.pop()
+        if problem.isGoalState(current):
+            return path
+        if current not in visited:
+            visited.add(current)
+            for successor, action, _ in problem.getSuccessors(current):
+                print(str(successor) + " " + str(action))
+                if successor not in visited:
+                    queue.push((successor, path + [action]))
+    return []        
     
 
 
