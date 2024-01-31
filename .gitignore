@@ -1,0 +1,5 @@
+.idea/
+*/.idea/
+search/__pycache__/
+*.log
+*.aux
