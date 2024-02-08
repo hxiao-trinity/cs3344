@@ -283,29 +283,22 @@ class CornersProblem(search.SearchProblem):
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
         self.corners = ((1, 1), (1, top), (right, 1), (right, top))
-
-        # Check if there is food in each corner, print a warning if not
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
-
-        # Initialize expanded counter
         self._expanded = 0
 
-        # Initialize any other code you want to use to initialize the problem
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state space)
         """
-        # The start state includes Pacman's position and a tuple representing which corners are visited
         return (self.startingPosition, (False, False, False, False))
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        # Check if all four corners have been visited
         return all(state[1])
 
     def getSuccessors(self, state):
@@ -314,26 +307,20 @@ class CornersProblem(search.SearchProblem):
         """
         successors = []
 
-        # Unpack current state
         position, visited_corners = state
 
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Calculate the next position after taking the action
             x, y = position
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
 
-            # Check if the next position is valid (not hitting a wall)
             if not self.walls[nextx][nexty]:
-                # Create a new state with the updated position and visited corners
                 next_position = (nextx, nexty)
                 next_visited_corners = tuple(visited_corners[i] or next_position == self.corners[i] for i in range(4))
                 next_state = (next_position, next_visited_corners)
 
-                # Add the successor to the list with action and cost
                 successors.append((next_state, action, 1))
 
-        # Update expanded counter
         self._expanded += 1
 
         return successors
@@ -346,16 +333,13 @@ class CornersProblem(search.SearchProblem):
         if actions is None:
             return 999999
 
-        # Initialize cost and starting position
         cost = 0
         x, y = self.startingPosition
 
         for action in actions:
-            # Check the next position after taking the action
             dx, dy = Actions.directionToVector(action)
             x, y = int(x + dx), int(y + dy)
 
-            # Check if the next position is hitting a wall
             if self.walls[x][y]:
                 return 999999
 
@@ -376,21 +360,17 @@ def cornersHeuristic(state, problem):
 
     """
     position, visited_corners = state
-    corners = problem.corners  # These are the corner coordinates
-    walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
+    corners = problem.corners  
+    walls = problem.walls  
 
-    # Check if all corners have been visited
     if all(visited_corners):
         return 0
 
-    # Filter out the unvisited corners
     unvisited_corners = [corner for i, corner in enumerate(corners) if not visited_corners[i]]
 
-    # If there are no unvisited corners, return 0
     if not unvisited_corners:
         return 0
 
-    # Calculate the minimum Manhattan distance to an unvisited corner
     min_dist = float('inf')
     for corner in unvisited_corners:
         if not walls[corner[0]][corner[1]]:
@@ -419,7 +399,7 @@ class FoodSearchProblem:
         self.walls = startingGameState.getWalls()
         self.startingGameState = startingGameState
         self._expanded = 0 # DO NOT CHANGE
-        self.heuristicInfo = {} # A dictionary for the heuristic to store information
+        self.heuristicInfo = {} 
 
     def getStartState(self):
         return self.start
@@ -447,7 +427,6 @@ class FoodSearchProblem:
         x,y= self.getStartState()[0]
         cost = 0
         for action in actions:
-            # figure out the next state and see whether it's legal
             dx, dy = Actions.directionToVector(action)
             x, y = int(x + dx), int(y + dy)
             if self.walls[x][y]:
