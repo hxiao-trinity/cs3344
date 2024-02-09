@@ -40,6 +40,7 @@ from game import Actions
 import util
 import time
 import search
+from search import *
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -511,8 +512,9 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        
-        util.raiseNotDefined()
+        return search.breadthFirstSearch(problem)
+
+        # util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -548,9 +550,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        isGoal = state == self.goal
+        return (state in self.food.asList())
 
-        return isGoal
+
 
 def mazeDistance(point1, point2, gameState):
     """
@@ -569,5 +571,4 @@ def mazeDistance(point1, point2, gameState):
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
     return len(search.bfs(prob))
-
 
