@@ -4,11 +4,15 @@
 */.idea/
 
 __pycache__/
+*/__pycache__
 *.log
 *.aux
+*/.vscode
 .vscode
+*.test_output
 
 # temp files
 .~*
 *~
 *.orig
+*.token

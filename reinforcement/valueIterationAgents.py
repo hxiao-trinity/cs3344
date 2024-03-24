@@ -62,6 +62,30 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        states = self.mdp.getStates()
+        values = util.Counter()
+        for state in states:
+            values[(state, 0)] = 0
+        for k in range(1, self.iterations + 1):
+            for state in states:
+                actions = self.mdp.getPossibleActions(state)
+                maxVal = float('-infinity')
+                for action in actions:
+                    value = 0
+                    nextStateInfos = self.mdp.getTransitionStatesAndProbs(state, action)
+                    for nextStateInfo in nextStateInfos:
+                        nextState = nextStateInfo[0]
+                        prob = nextStateInfo[1]
+                        reward = self.mdp.getReward(state, action, nextState)
+                        v = values[(nextState, k-1)]
+                        value += prob * (reward + self.discount * v)
+                    maxVal = max(maxVal, value)
+                if maxVal > float('-infinity'):
+                    values[(state, k)] = maxVal
+                else:
+                    values[(state, k)] = 0
+        for state in states:
+            self.values[state] = values[(state, self.iterations)]
 
 
     def getValue(self, state):
@@ -77,7 +101,12 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        q = 0
+        for nextState, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+            reward = self.mdp.getReward(state, action, nextState)
+            v = self.values[nextState]
+            q += prob * (reward + self.discount * v)
+        return q
 
     def computeActionFromValues(self, state):
         """
@@ -89,7 +118,15 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = self.mdp.getPossibleActions(state)
+        bestQ = float('-inf')
+        bestAction = None
+        for action in actions:
+            if self.getQValue(state,action) > bestQ:
+                bestQ = self.getQValue(state,action)
+                bestAction = action
+        return bestAction
+        
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
@@ -150,4 +187,54 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+        states = self.mdp.getStates()
+        predecessors = {}
+        for state in states:
+            predecessors[state] = set()
+        for state in states:
+            for action in self.mdp.getPossibleActions(state):
+                nextStateInfos = self.mdp.getTransitionStatesAndProbs(state, action)
+                for (nextState, _) in nextStateInfos:
+                    predecessors[nextState].add(state)
+
+        prioQ = util.PriorityQueue()
+
+        for s in states:
+            if self.mdp.isTerminal(s):
+                continue
+            bestAction = self.computeActionFromValues(s)
+            highestQValue = self.computeQValueFromValues(s, bestAction)
+            diff = abs(highestQValue - self.values[s])
+            prioQ.push(s, -diff)
+
+        for _ in range(self.iterations):
+            if prioQ.isEmpty():
+                return
+            s = prioQ.pop()
+
+            if not self.mdp.isTerminal(s):
+                actions = self.mdp.getPossibleActions(s)
+                maxVal = float('-infinity')
+                for action in actions:
+                    value = 0
+                    nextStateInfos = self.mdp.getTransitionStatesAndProbs(s, action)
+                    for (nextState, prob) in nextStateInfos:
+                        reward = self.mdp.getReward(s, action, nextState)
+                        v = self.values[nextState]
+                        value += prob * (reward + self.discount * v)
+                    maxVal = max(maxVal, value)
+                if maxVal > float('-infinity'):
+                    self.values[s] = maxVal
+                else:
+                    self.values[s] = 0
+
+            for p in predecessors[s]:
+                bestAction = self.computeActionFromValues(p)
+                if bestAction == None:
+                    continue
+                maxQ = self.computeQValueFromValues(p, bestAction)
+                diff = abs(maxQ - self.values[p])
+
+                if diff > self.theta:
+                    prioQ.update(p, -diff)
 
