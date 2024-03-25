@@ -73,9 +73,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                 for action in actions:
                     value = 0
                     nextStateInfos = self.mdp.getTransitionStatesAndProbs(state, action)
-                    for nextStateInfo in nextStateInfos:
-                        nextState = nextStateInfo[0]
-                        prob = nextStateInfo[1]
+                    for (nextState, prob) in nextStateInfos:
                         reward = self.mdp.getReward(state, action, nextState)
                         v = values[(nextState, k-1)]
                         value += prob * (reward + self.discount * v)
