@@ -16,3 +16,6 @@ __pycache__/
 *~
 *.orig
 *.token
+
+# API Key
+apikey.py
