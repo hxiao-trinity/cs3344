@@ -12,8 +12,5 @@ def printWithColor(text, color="", end=''):
         "reset": "\033[0m",
     }
     
-    # If a color name is provided, use it; otherwise, assume it's an ANSI code.
     color_code = colors.get(color.lower(), color)
-    
-    # Print the text in the specified color, then reset the color.
     print(f"{color_code}{text}\033[0m", end=end)
