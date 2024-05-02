@@ -5,7 +5,6 @@ df = pd.read_csv('cosb.csv')
 
 def extract_prerequisites(description):
     
-
     match = re.search(r"Prerequisite: ([^.]+)\.", description)
     if match:
         return match.group(1).strip()  # Extract the prerequisite part and strip any extra whitespace
