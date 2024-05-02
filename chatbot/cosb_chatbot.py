@@ -27,5 +27,3 @@ while True:
     agent.run("ssssssss")
     messages = [HumanMessage(content=user_input)]
     response = agent.invoke(messages) 
-
-    print("Bot:", response.content)

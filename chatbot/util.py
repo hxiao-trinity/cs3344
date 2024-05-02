@@ -1,3 +1,5 @@
+
+
 def printWithColor(text, color="", end=''):
 
     colors = {
@@ -14,3 +16,4 @@ def printWithColor(text, color="", end=''):
     
     color_code = colors.get(color.lower(), color)
     print(f"{color_code}{text}\033[0m", end=end)
+
