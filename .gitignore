@@ -21,3 +21,5 @@ __pycache__/
 apikey.py
 
 HW/
+
+.DS_Store

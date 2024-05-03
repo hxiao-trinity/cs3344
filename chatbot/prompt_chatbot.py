@@ -3,27 +3,26 @@ from apikey import apikey
 from langchain_openai import ChatOpenAI
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain.prompts import PromptTemplate
+import util
 
-os.environ['OPENAI_API_KEY'] = apikey
 
 # ** YOUR CODE HERE **
 
-chat = ChatOpenAI(temperature=0.9)
+chat = ChatOpenAI(model="gpt-3.5-turbo-0125", api_key = apikey,  temperature=0)
+available_ingredients = ["1 large egg", "1 cup of light-brown sugar", "2 cup of salt"]
 
 template = PromptTemplate(
     input_variables=['dish', 'available_ingredients'],
     template="""Given that the available ingredients are: {available_ingredients}.
-                What additional ingredients and quantities are needed to make {dish}?"""
+                What are the ingredients and quantities we need to make {dish}?
+                Additionally what is the adjusted shopping list that takes into account of the ingredients we already have?"""
 )
-
-# Initialize variables to track conversation history and available ingredients
-history = []
-available_ingredients = []
 
 print("Welcome to the Cooking Assistant! Tell me which dish you want to make or type 'quit' to exit.")
 
 while True:
-    dish = input("You: ")
+    util.printWithColor("You: ", "red")
+    dish = input()
     if dish.lower() == 'quit':
         print("-----------------------------------------------------------------------")
         break
@@ -35,8 +34,10 @@ while True:
     )
     
     # Send the prompt to the model
-    messages = [SystemMessage(content=prompt_text)]
-    response = chat.invoke(messages)
+    message = [HumanMessage(content=prompt_text)]
+    response = chat.invoke(message)
+    
     
     # Print the bot's response (ingredient list)
-    print("Bot:", response.content)
+    util.printWithColor("Bot: ", "green")
+    print(response.content)
