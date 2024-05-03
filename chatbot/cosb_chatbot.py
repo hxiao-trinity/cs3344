@@ -16,7 +16,7 @@ agent = create_csv_agent(
     verbose=False
 )
 
-# print("Welcome to the Trinity COSB Course Assistant! Ask me anything about the courses. Type 'quit' to exit.")
+print("Welcome to the Trinity COSB Course Assistant! Ask me anything about the courses. Type 'quit' to exit.")
 
 
 while True:
@@ -24,7 +24,6 @@ while True:
     if user_input.lower() == 'quit':
         print("----------------------------------------------------------------")
         break
-    # agent.run(user_input)
     messages = [HumanMessage(content=user_input)]
     response = agent.invoke(messages) 
     print(response.get("output"))
