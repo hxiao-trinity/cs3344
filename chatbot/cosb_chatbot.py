@@ -3,20 +3,20 @@ from apikey import apikey
 from langchain_openai import ChatOpenAI, OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from langchain.agents.agent_types import AgentType
+# from langchain.agents.agent_types import AgentType
 from langchain_experimental.agents.agent_toolkits import create_csv_agent
 
-os.environ['OPENAI_API_KEY'] = apikey
+# os.environ['OPENAI_API_KEY'] = apikey
 
 # ** YOUR CODE HERE **
 agent = create_csv_agent(
-    ChatOpenAI(temperature=0.5, model="gpt-3.5-turbo"),
+    ChatOpenAI(temperature=0.5, model="gpt-3.5-turbo", api_key = apikey),
     "old_cosb.csv",
     agent_type="openai-tools",
-    verbose=True
+    verbose=False
 )
 
-print("Welcome to the Trinity COSB Course Assistant! Ask me anything about the courses. Type 'quit' to exit.")
+# print("Welcome to the Trinity COSB Course Assistant! Ask me anything about the courses. Type 'quit' to exit.")
 
 
 while True:
@@ -24,6 +24,7 @@ while True:
     if user_input.lower() == 'quit':
         print("----------------------------------------------------------------")
         break
-    agent.run("ssssssss")
+    # agent.run(user_input)
     messages = [HumanMessage(content=user_input)]
     response = agent.invoke(messages) 
+    print(response.get("output"))
