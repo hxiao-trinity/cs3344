@@ -16,12 +16,12 @@ agent = create_csv_agent(
     verbose=True
 )
 
-print("Welcome to the Trinity COSB Course Assistant! Ask me anything about the courses. Type 'quit' to exit.")
 
+print("Welcome to the Trinity COSB Course Assistant! Ask me anything about the courses. Type ':q' to exit.")
 
 while True:
     user_input = input("You: ")
-    if user_input.lower() == 'quit':
+    if user_input.lower() == ':q':
         print("----------------------------------------------------------------")
         break
     agent.run("ssssssss")
