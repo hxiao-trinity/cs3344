@@ -1,24 +1,23 @@
 import os
 from apikey import apikey
-from langchain_openai import ChatOpenAI
+
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_core.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
 )
+from langchain_openai import ChatOpenAI
 import util
 
-os.environ['OPENAI_API_KEY'] = apikey
 
 # ** YOUR CODE HERE**
-chat = ChatOpenAI(temperature=1)
-history = []
+chat = ChatOpenAI(model="gpt-3.5-turbo-0125", api_key = apikey,  temperature=0)
 messages = []
 
 while True:
     util.printWithColor("You: ", "red")
-    user_input = input("")
+    user_input = input()
     if user_input.lower() == 'quit':
         print("--------------------------------------------------------------------------------")
         break
@@ -26,8 +25,8 @@ while True:
     response = chat.invoke(messages)
     util.printWithColor("Bot: ", "green")
     print(response.content)
-    messages.append(SystemMessage(content=response.content))
+    messages.append(AIMessage(content=response.content))
 
-chat.invoke(messages)
+# chat.invoke(messages)
 
 
