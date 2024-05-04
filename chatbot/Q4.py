@@ -1,7 +1,7 @@
 import os
 from apikey import apikey
 from langchain_openai import ChatOpenAI, OpenAI
-from langchain.prompts import PromptTemplate
+from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain.agents.agent_types import AgentType
 from langchain_experimental.agents.agent_toolkits import create_csv_agent
@@ -20,40 +20,37 @@ agent = create_csv_agent(
     agent_type="openai-tools",
     verbose=False
 )
-print("Welcome to the Trinity COSB Course Assistant! Ask me anything about the courses. Type ':q' to exit.")
-# setup = []
+
+#set up knowledge
 setupStr = ""
-# purpose
 setupStr = setupStr + "You are a course assistant chatbot trained to provide information about courses at Trinity Course of Study Bulletin (COSB)."
-# how to respond
 setupStr = setupStr + "When someone ask you about a course, give its course as well as associated course title"
 setupStr = setupStr + "Pathways are requirements, you must take one course in each pathway to graduate. Here is the list of pathway courses and their names: " + ", ".join(pathways)
 setupStr = setupStr + "If a course can double dip, it can satisfy two or more pathways, more specifically, its pathway description would have a hyphen"
 setupStr = setupStr + "Be positive and supportive"
-# setup.append(SystemMessage(content=setupStr))
 
-messages = []
-template = PromptTemplate(
-    input_variables=['input'],
-    template= "You are a course assistant chatbot trained to provide information about courses at Trinity Course of Study Bulletin (COSB). " + "Answer this user's message: {input}"
+chat_template = ChatPromptTemplate.from_messages([
+    SystemMessage(content=(setupStr)),
+    HumanMessagePromptTemplate.from_template("{text}")
+  ]
 )
 
+history = []
 # Memory handling
-# messages = copy.deepcopy(setup)
 def brute_memory_trim():
-  global messages
-  if len(messages) > (len(setup) + 12):
-    messages = messages[:len(setup)] + messages[len(setup) + 2:]
+  global history
+  if len(history) > 10:
+    history = history[:len(setup)] + history[len(setup) + 2:]
 
 def summarize_memory_trim():
-  global messages
-  if len(messages) > 10:
-    messages.append(HumanMessage(content="Distill the above chat messages into a single summary message. Include as many specific details as you can. Especially details about the user information."))
-    summary = agent.invoke(messages).get("output") 
-    messages = messages[:len(setup)]
-    messages.append(SystemMessage(content=summary))
-    print(messages)
+  global history
+  if len(history) > 10:
+    history.append(HumanMessage(content="""Distill the above chat history into a single summary message. 
+    Include as many specific details as you can, especially details about the user information."""))
+    summary = agent.invoke(history).get("output") 
+    history = [SystemMessage(content=summary)]
 
+print("Welcome to the Trinity COSB Course Assistant! Ask me anything about the courses. Type 'quit' to exit.")
 #Chatting
 while True:
     util.printWithColor("You: ", "red")
@@ -61,23 +58,20 @@ while True:
     if user_input.lower() == 'quit':
         print("----------------------------------------------------------------")
         break
-    # messages.append(HumanMessage(content=user_input))
 
-    prompt_text = template.format(
-        input=user_input
-    )
-
-    response = agent.invoke(messages + [HumanMessage(content=prompt_text)]) 
+    # print(chat_template.format_messages(text=user_input))
+    response = agent.invoke(history + chat_template.format_messages(text=user_input))
+    # response = agent.invoke(history + [HumanMessage(content=prompt_text)]) 
 
     #printing AI response
     util.printWithColor("Bot: ", "green")
     print(response.get("output"))
 
-    messages.append(HumanMessage(content=user_input))
-    messages.append(AIMessage(content = response.get("output")))
+    history.append(HumanMessage(content=user_input))
+    history.append(AIMessage(content = response.get("output")))
     # brute_memoryTrim()
-    if len(messages) > 10:
-      print(messages)
+    # if len(history) > 10:
+    #   print(history)
     summarize_memory_trim()
 
 
