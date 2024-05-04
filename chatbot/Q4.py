@@ -5,6 +5,12 @@ from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain.agents.agent_types import AgentType
 from langchain_experimental.agents.agent_toolkits import create_csv_agent
+
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_chroma import Chroma
+from langchain_openai import OpenAIEmbeddings
+
 import util
 import copy
 
@@ -12,6 +18,16 @@ import copy
 pathways = ["HU: Humanities", "CE: Creative Expression", "SBS: Social/Behavioral Sciences", "NS: Natural Sciences", "QR: Quantitative Reasoning"
 , "WC: Written Communication", "OVC: Oral and Visual Communication", "DL: Digital Literacy", "GA: Global Awareness", "UD: Understanding Diversity",
 "FL: Foreign Language", "HP: Historical Perspective", "FE: Fitness Education"]
+
+#Comsci website
+loader = WebBaseLoader("https://www.trinity.edu/academics/cosb/csci/computer-science-bs#requirements")
+data = loader.load()
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+all_splits = text_splitter.split_documents(data)
+vectorstore = Chroma.from_documents(documents=all_splits, embedding=OpenAIEmbeddings(openai_api_key=apikey))
+retriever = vectorstore.as_retriever(k=4)
+docs = retriever.invoke("What is the CS major requirement")
+print(docs)
 
 #AI set up
 agent = create_csv_agent(
@@ -31,6 +47,7 @@ setupStr = setupStr + "Be positive and supportive"
 
 chat_template = ChatPromptTemplate.from_messages([
     SystemMessage(content=(setupStr)),
+    SystemMessage(content="Answer information about the computer science (CS) major with this requirement sepcification:\n\n{context}"),
     HumanMessagePromptTemplate.from_template("{text}")
   ]
 )
@@ -60,7 +77,7 @@ while True:
         break
 
     # print(chat_template.format_messages(text=user_input))
-    response = agent.invoke(history + chat_template.format_messages(text=user_input))
+    response = agent.invoke(history + chat_template.format_messages(text=user_input, context=docs))
     # response = agent.invoke(history + [HumanMessage(content=prompt_text)]) 
 
     #printing AI response
