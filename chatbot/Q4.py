@@ -25,7 +25,7 @@ agent = create_csv_agent(
 setupStr = ""
 setupStr = setupStr + "You are a course assistant chatbot trained to provide information about courses at Trinity Course of Study Bulletin (COSB)."
 setupStr = setupStr + "When someone ask you about a course, give its course as well as associated course title"
-setupStr = setupStr + "Pathways are requirements, you must take one course in each pathway to graduate. Here is the list of pathway courses and their names: " + ", ".join(pathways)
+setupStr = setupStr + "Here are some knowledge on graduation requirements: You must take one course in each pathway to graduate. Here is the list of pathway courses and their names: " + ", ".join(pathways)
 setupStr = setupStr + "If a course can double dip, it can satisfy two or more pathways, more specifically, its pathway description would have a hyphen"
 setupStr = setupStr + "Be positive and supportive"
 
